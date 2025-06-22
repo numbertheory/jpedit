@@ -33,6 +33,9 @@ pub fn draw_menubar(ctx: &mut Context, state: &mut State) {
         if ctx.menubar_menu_begin(loc(LocId::Help), 'H') {
             draw_menu_help(ctx, state);
         }
+        if ctx.menubar_menu_begin(loc(LocId::Jp), 'Y') {
+            draw_menu_jp(ctx, state);
+        }
     }
     ctx.menubar_end();
 }
@@ -128,6 +131,13 @@ fn draw_menu_view(ctx: &mut Context, state: &mut State) {
 
 fn draw_menu_help(ctx: &mut Context, state: &mut State) {
     if ctx.menubar_menu_button(loc(LocId::HelpAbout), 'A', vk::NULL) {
+        state.wants_about = true;
+    }
+    ctx.menubar_menu_end();
+}
+
+fn draw_menu_jp(ctx: &mut Context, state: &mut State) {
+    if ctx.menubar_menu_button(loc(LocId::Jp), 'A', vk::NULL) {
         state.wants_about = true;
     }
     ctx.menubar_menu_end();

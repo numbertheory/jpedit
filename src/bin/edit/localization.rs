@@ -47,6 +47,7 @@ pub enum LocId {
     // Help menu
     Help,
     HelpAbout,
+    Jp,
 
     // Exit dialog
     UnsavedChangesDialogTitle,
@@ -546,6 +547,21 @@ const S_LANG_LUT: [[&str; LangId::Count as usize]; LocId::Count as usize] = [
     [
         /* en      */ "About",
         /* de      */ "Über",
+        /* es      */ "Acerca de",
+        /* fr      */ "À propos",
+        /* it      */ "Informazioni",
+        /* ja      */ "情報",
+        /* ko      */ "정보",
+        /* pt_br   */ "Sobre",
+        /* ru      */ "О программе",
+        /* zh_hans */ "关于",
+        /* zh_hant */ "關於",
+    ],
+
+    // Jp
+    [
+        /* en      */ "JP",
+        /* de      */ "JP",
         /* es      */ "Acerca de",
         /* fr      */ "À propos",
         /* it      */ "Informazioni",
