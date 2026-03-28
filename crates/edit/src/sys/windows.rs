@@ -227,6 +227,11 @@ pub fn inject_window_size_into_stdin() {
     }
 }
 
+#[allow(unused_variables)]
+pub fn reopen_stdin_from_tty() {
+    // On Windows, stdin is typically already connected to the console
+}
+
 fn get_console_size() -> Option<Size> {
     unsafe {
         let mut info: Console::CONSOLE_SCREEN_BUFFER_INFOEX = mem::zeroed();

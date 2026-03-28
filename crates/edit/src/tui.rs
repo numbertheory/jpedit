@@ -462,6 +462,21 @@ impl Tui {
         mem::replace(&mut self.read_timeout, time::Duration::MAX)
     }
 
+    /// Force the TUI to reset its internal state, useful after external
+    /// terminal changes (like running a full-screen program).
+    pub fn force_reset(&mut self) {
+        self.settling_have = 0;
+        self.settling_want = 0;
+        self.read_timeout = time::Duration::MAX;
+        self.mouse_position = Point::MIN;
+        self.mouse_state = InputMouseState::None;
+        self.mouse_is_drag = false;
+        self.mouse_click_counter = 0;
+        Self::clean_node_path(&mut self.focused_node_path);
+        Self::clean_node_path(&mut self.mouse_down_node_path);
+        self.cached_text_buffers.clear();
+    }
+
     /// Returns the viewport size.
     pub fn size(&self) -> Size {
         // We don't use the size stored in the framebuffer, because until

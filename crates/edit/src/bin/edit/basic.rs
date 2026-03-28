@@ -31,80 +31,74 @@ pub fn run_basic_from_document(state: &crate::State) {
 }
 
 pub fn run_basic(source: &str) {
-    if let Err(e) = run_basic_impl(source) {
-        eprintln!("\nError: {}", e);
-    }
-}
+    let mut tty_out = match File::options().write(true).open("/dev/tty") {
+        Ok(f) => f,
+        Err(e) => {
+            eprintln!("Cannot open /dev/tty: {}", e);
+            return;
+        }
+    };
 
-fn run_basic_impl(source: &str) -> Result<(), String> {
-    let mut tty_out = File::options()
-        .write(true)
-        .open("/dev/tty")
-        .map_err(|e| format!("Cannot open /dev/tty: {}", e))?;
+    let mut tty_in = match File::options().read(true).open("/dev/tty") {
+        Ok(f) => f,
+        Err(e) => {
+            eprintln!("Cannot open /dev/tty: {}", e);
+            return;
+        }
+    };
 
-    let mut tty_in = File::options()
-        .read(true)
-        .open("/dev/tty")
-        .map_err(|e| format!("Cannot open /dev/tty: {}", e))?;
+    tty_out.write_all(b"\x1b[?1049l\x1b[0 q\x1b[?25h\x1b[2J\x1b[H").ok();
+    tty_out.flush().ok();
 
-    tty_out.write_all(b"\x1b[0 q\x1b[?25h\x1b[2J\x1b[H").map_err(|e| e.to_string())?;
-    tty_out.flush().map_err(|e| e.to_string())?;
-
-    restore_terminal_raw_mode(tty_in.as_raw_fd())?;
+    restore_terminal_raw_mode(tty_in.as_raw_fd());
 
     match parse_program(source) {
         Ok(program) => {
-            execute_program(&program, &mut tty_out, &mut tty_in)?;
+            if let Err(e) = execute_program(&program, &mut tty_out, &mut tty_in) {
+                let _ = writeln!(tty_out, "\nError: {}", e);
+            }
         }
         Err(e) => {
-            return Err(e);
+            let _ = writeln!(tty_out, "\nError: {}", e);
         }
     }
 
-    restore_terminal_sane_mode(tty_in.as_raw_fd())?;
+    tty_out.write_all(b"\nPress any key to return to the editor...\x1b[0m").ok();
+    tty_out.flush().ok();
 
-    tty_out.write_all(b"\x1b[?1049h").map_err(|e| e.to_string())?;
-    tty_out.flush().map_err(|e| e.to_string())?;
+    let mut buf = [0u8];
+    let _ = tty_in.read(&mut buf);
 
-    Ok(())
+    // Flush any pending input (e.g. if the user pressed an arrow key which generated multiple bytes)
+    unsafe {
+        libc::tcflush(tty_in.as_raw_fd(), libc::TCIFLUSH);
+    }
+
+    // Re-enter alt buffer and restore all modes that setup_terminal enabled.
+    // 1049: Alternative Screen Buffer
+    // 1002: Cell Motion Mouse Tracking
+    // 1006: SGR Mouse Mode
+    // 2004: Bracketed Paste Mode
+    // 1036: Xterm: "meta sends escape"
+    tty_out.write_all(b"\x1b[?1049h\x1b[?1002;1006;2004h\x1b[?1036h\x1b[2J\x1b[H\x1b[3J").ok();
+    tty_out.flush().ok();
+
+    // Re-initialize sys to ensure stdin/stdout state is correct
+    let _ = edit::sys::switch_modes();
 }
 
-fn restore_terminal_raw_mode(fd: std::os::unix::io::RawFd) -> Result<(), String> {
-    use libc::{ECHO, ICANON, tcflag_t, tcgetattr, tcsetattr, termios};
+fn restore_terminal_raw_mode(fd: std::os::unix::io::RawFd) {
+    use libc::{ECHO, ICANON, TCSANOW, tcflag_t, tcgetattr, tcsetattr, termios};
 
     let mut term: termios = unsafe { std::mem::zeroed() };
 
     if unsafe { tcgetattr(fd, &mut term) } != 0 {
-        return Err("tcgetattr failed".to_string());
+        return;
     }
 
     term.c_lflag &= !(ECHO as tcflag_t | ICANON as tcflag_t);
-    term.c_cc[4] = 1;
-    term.c_cc[5] = 0;
 
-    if unsafe { tcsetattr(fd, 0, &term) } != 0 {
-        return Err("tcsetattr failed".to_string());
-    }
-
-    Ok(())
-}
-
-fn restore_terminal_sane_mode(fd: std::os::unix::io::RawFd) -> Result<(), String> {
-    use libc::{ECHO, ICANON, tcflag_t, tcgetattr, tcsetattr, termios};
-
-    let mut term: termios = unsafe { std::mem::zeroed() };
-
-    if unsafe { tcgetattr(fd, &mut term) } != 0 {
-        return Err("tcgetattr failed".to_string());
-    }
-
-    term.c_lflag |= ECHO as tcflag_t | ICANON as tcflag_t;
-
-    if unsafe { tcsetattr(fd, 0, &term) } != 0 {
-        return Err("tcsetattr failed".to_string());
-    }
-
-    Ok(())
+    let _ = unsafe { tcsetattr(fd, TCSANOW, &term) };
 }
 
 fn parse_program(source: &str) -> Result<Vec<ProgramLine>, String> {
@@ -257,11 +251,6 @@ fn execute_program<W: Write, R: Read>(
             }
         }
     }
-
-    writeln!(tty_out).map_err(|e| e.to_string())?;
-    writeln!(tty_out, "Press any key to continue...").map_err(|e| e.to_string())?;
-    tty_out.flush().map_err(|e| e.to_string())?;
-    wait_for_key_raw(tty_in);
 
     Ok(())
 }

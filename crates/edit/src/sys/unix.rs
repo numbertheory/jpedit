@@ -67,10 +67,15 @@ pub fn switch_modes() -> io::Result<()> {
         check_int_return(libc::sigaction(libc::SIGWINCH, &sigwinch_action, null_mut()))?;
 
         // Get the original terminal modes so we can disable raw mode on exit.
-        let mut termios = MaybeUninit::<libc::termios>::uninit();
-        check_int_return(libc::tcgetattr(STATE.stdout, termios.as_mut_ptr()))?;
-        let mut termios = termios.assume_init();
-        STATE.stdout_initial_termios = Some(termios);
+        #[allow(static_mut_refs)]
+        if STATE.stdout_initial_termios.is_none() {
+            let mut termios = MaybeUninit::<libc::termios>::uninit();
+            check_int_return(libc::tcgetattr(STATE.stdout, termios.as_mut_ptr()))?;
+            let termios = termios.assume_init();
+            STATE.stdout_initial_termios = Some(termios);
+        }
+        #[allow(static_mut_refs)]
+        let mut termios = STATE.stdout_initial_termios.unwrap();
 
         termios.c_iflag &= !(
             // When neither IGNBRK...
@@ -140,6 +145,28 @@ impl Drop for Deinit {
 pub fn inject_window_size_into_stdin() {
     unsafe {
         STATE.inject_resize = true;
+    }
+}
+
+pub fn reopen_stdin_from_tty() {
+    use std::ffi::CString;
+    unsafe {
+        // Flush and discard any pending input
+        libc::tcflush(STATE.stdin, libc::TCIFLUSH);
+        
+        let tty_path = CString::new(b"/dev/tty".to_vec()).unwrap();
+        let new_stdin = match libc::open(tty_path.as_ptr(), libc::O_RDONLY) {
+            -1 => return,
+            fd => fd,
+        };
+        
+        let old_stdin = STATE.stdin;
+        STATE.stdin = new_stdin;
+        STATE.utf8_len = 0;
+        
+        if old_stdin != libc::STDIN_FILENO {
+            libc::close(old_stdin);
+        }
     }
 }
 

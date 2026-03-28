@@ -1,0 +1,71 @@
+Script started on 2026-03-28 16:09:11-07:00 [COMMAND="RUST_BACKTRACE=1 cargo run -- /home/jp/dev/edit/test.bas" <not executed on terminal>]
+[1m[92m   Compiling[0m edit v1.2.1 (/home/jp/dev/edit/crates/edit)
+[1m[33mwarning[0m[1m: unused import: `std::time::Duration`[0m
+  [1m[94m--> [0mcrates/edit/src/bin/edit/main.rs:17:5
+   [1m[94m|[0m
+[1m[94m17[0m [1m[94m|[0m use std::time::Duration;
+   [1m[94m|[0m     [1m[33m^^^^^^^^^^^^^^^^^^^[0m
+   [1m[94m|[0m
+   [1m[94m= [0m[1mnote[0m: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+[1m[33mwarning[0m[1m: unused import: `self`[0m
+  [1m[94m--> [0mcrates/edit/src/bin/edit/main.rs:24:25
+   [1m[94m|[0m
+[1m[94m24[0m [1m[94m|[0m use edit::framebuffer::{self, IndexedColor};
+   [1m[94m|[0m                         [1m[33m^^^^[0m
+
+[1m[33mwarning[0m[1m: unused import: `edit::oklab::StraightRgba`[0m
+  [1m[94m--> [0mcrates/edit/src/bin/edit/main.rs:27:5
+   [1m[94m|[0m
+[1m[94m27[0m [1m[94m|[0m use edit::oklab::StraightRgba;
+   [1m[94m|[0m     [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[33mwarning[0m[1m: unused import: `Token`[0m
+  [1m[94m--> [0mcrates/edit/src/bin/edit/main.rs:29:22
+   [1m[94m|[0m
+[1m[94m29[0m [1m[94m|[0m use edit::vt::{self, Token};
+   [1m[94m|[0m                      [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: unused import: `unicode`[0m
+  [1m[94m--> [0mcrates/edit/src/bin/edit/main.rs:30:31
+   [1m[94m|[0m
+[1m[94m30[0m [1m[94m|[0m use edit::{base64, path, sys, unicode};
+   [1m[94m|[0m                               [1m[33m^^^^^^^[0m
+
+[1m[33mwarning[0m[1m: unused variable: `tui`[0m
+   [1m[94m--> [0mcrates/edit/src/bin/edit/main.rs:583:19
+    [1m[94m|[0m
+[1m[94m583[0m [1m[94m|[0m fn setup_terminal(tui: &mut Tui, state: &mut State, vt_parser: &mut vt::Parser) -> RestoreModes {
+    [1m[94m|[0m                   [1m[33m^^^[0m [1m[33mhelp: if this is intentional, prefix it with an underscore: `_tui`[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+[1m[33mwarning[0m[1m: unused variable: `state`[0m
+   [1m[94m--> [0mcrates/edit/src/bin/edit/main.rs:583:34
+    [1m[94m|[0m
+[1m[94m583[0m [1m[94m|[0m fn setup_terminal(tui: &mut Tui, state: &mut State, vt_parser: &mut vt::Parser) -> RestoreModes {
+    [1m[94m|[0m                                  [1m[33m^^^^^[0m [1m[33mhelp: if this is intentional, prefix it with an underscore: `_state`[0m
+
+[1m[33mwarning[0m[1m: unused variable: `vt_parser`[0m
+   [1m[94m--> [0mcrates/edit/src/bin/edit/main.rs:583:53
+    [1m[94m|[0m
+[1m[94m583[0m [1m[94m|[0m fn setup_terminal(tui: &mut Tui, state: &mut State, vt_parser: &mut vt::Parser) -> RestoreModes {
+    [1m[94m|[0m                                                     [1m[33m^^^^^^^^^[0m [1m[33mhelp: if this is intentional, prefix it with an underscore: `_vt_parser`[0m
+
+[1m[33mwarning[0m[1m: method `reflow_all` is never used[0m
+   [1m[94m--> [0mcrates/edit/src/bin/edit/documents.rs:256:12
+    [1m[94m|[0m
+[1m[94m115[0m [1m[94m|[0m impl DocumentManager {
+    [1m[94m|[0m [1m[94m--------------------[0m [1m[94mmethod in this implementation[0m
+[1m[94m...[0m
+[1m[94m256[0m [1m[94m|[0m     pub fn reflow_all(&self) {
+    [1m[94m|[0m            [1m[33m^^^^^^^^^^[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+[1m[33mwarning[0m: `edit` (bin "edit") generated 9 warnings (run `cargo fix --bin "edit" -p edit` to apply 8 suggestions)
+[1m[92m    Finished[0m ]8;;https://doc.rust-lang.org/cargo/reference/profiles.html#default-profiles\`dev` profile [unoptimized + debuginfo]]8;;\ target(s) in 0.61s
+[1m[92m     Running[0m `target/debug/edit /home/jp/dev/edit/test.bas`
+[?1049h[?1002;1006;2004h[?1036h[?1049l[0 q[?25h[2J[HHello World
+
+Press any key
