@@ -55,15 +55,15 @@ pub fn run_basic(source: &str) {
     match parse_program(source) {
         Ok(program) => {
             if let Err(e) = execute_program(&program, &mut tty_out, &mut tty_in) {
-                let _ = writeln!(tty_out, "\nError: {}", e);
+                let _ = writeln!(tty_out, "\r\nError: {}", e);
             }
         }
         Err(e) => {
-            let _ = writeln!(tty_out, "\nError: {}", e);
+            let _ = writeln!(tty_out, "\r\nError: {}", e);
         }
     }
 
-    tty_out.write_all(b"\nPress any key to return to the editor...\x1b[0m").ok();
+    tty_out.write_all(b"\r\nPress any key to return to the editor...\x1b[0m").ok();
     tty_out.flush().ok();
 
     let mut buf = [0u8];
@@ -225,7 +225,7 @@ fn execute_program<W: Write, R: Read>(
                         write!(tty_out, "{}", evaluated).map_err(|e| e.to_string())?;
                     }
                 }
-                writeln!(tty_out).map_err(|e| e.to_string())?;
+                write!(tty_out, "\r\n").map_err(|e| e.to_string())?;
                 tty_out.flush().map_err(|e| e.to_string())?;
                 pc += 1;
             }
@@ -240,8 +240,8 @@ fn execute_program<W: Write, R: Read>(
                 break;
             }
             Statement::Pause => {
-                writeln!(tty_out).map_err(|e| e.to_string())?;
-                writeln!(tty_out, "Press any key to continue...").map_err(|e| e.to_string())?;
+                write!(tty_out, "\r\nPress any key to continue...\r\n")
+                    .map_err(|e| e.to_string())?;
                 tty_out.flush().map_err(|e| e.to_string())?;
                 wait_for_key_raw(tty_in);
                 break;
