@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 mod apperr;
+mod basic;
 mod documents;
 mod draw_editor;
 mod draw_filepicker;
@@ -171,6 +172,12 @@ fn run() -> apperr::Result<()> {
 
         if state.exit {
             break;
+        }
+
+        if state.wants_run {
+            state.wants_run = false;
+            basic::run_basic_from_document(&state);
+            continue;
         }
 
         // Render the UI and write it to the terminal.

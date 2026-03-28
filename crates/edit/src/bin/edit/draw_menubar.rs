@@ -30,6 +30,9 @@ pub fn draw_menubar(ctx: &mut Context, state: &mut State) {
             if ctx.menubar_menu_begin(loc(LocId::View), 'V') {
                 draw_menu_view(ctx, state);
             }
+            if ctx.menubar_menu_begin("Tools", 'T') {
+                draw_menu_tools(ctx, state);
+            }
         }
         if ctx.menubar_menu_begin(loc(LocId::Help), 'H') {
             draw_menu_help(ctx, state);
@@ -148,6 +151,13 @@ fn draw_menu_view(ctx: &mut Context, state: &mut State) {
 fn draw_menu_help(ctx: &mut Context, state: &mut State) {
     if ctx.menubar_menu_button(loc(LocId::HelpAbout), 'A', vk::NULL) {
         state.wants_about = true;
+    }
+    ctx.menubar_menu_end();
+}
+
+fn draw_menu_tools(ctx: &mut Context, state: &mut State) {
+    if ctx.menubar_menu_button("Run", 'R', vk::F5) {
+        state.wants_run = true;
     }
     ctx.menubar_menu_end();
 }
