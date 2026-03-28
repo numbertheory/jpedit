@@ -475,6 +475,7 @@ impl Tui {
         Self::clean_node_path(&mut self.focused_node_path);
         Self::clean_node_path(&mut self.mouse_down_node_path);
         self.cached_text_buffers.clear();
+        self.framebuffer.force_redraw();
     }
 
     /// Returns the viewport size.

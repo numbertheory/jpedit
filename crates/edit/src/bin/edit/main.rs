@@ -177,7 +177,16 @@ fn run() -> apperr::Result<()> {
         if state.wants_run {
             state.wants_run = false;
             basic::run_basic_from_document(&state);
-            continue;
+            tui.force_reset();
+            sys::inject_window_size_into_stdin();
+            loop {
+                let mut ctx = tui.create_context(None);
+                draw(&mut ctx, &mut state);
+                drop(ctx);
+                if !tui.needs_settling() {
+                    break;
+                }
+            }
         }
 
         // Render the UI and write it to the terminal.

@@ -164,6 +164,14 @@ impl Framebuffer {
         }
     }
 
+    pub fn force_redraw(&mut self) {
+        let front = &mut self.buffers[self.frame_counter & 1];
+        // Trigger a full redraw. (Yes, it's a hack.)
+        front.fg_bitmap.fill(StraightRgba::from_le(1));
+        // Trigger a cursor update as well, just to be sure.
+        front.cursor = Cursor::new_invalid();
+    }
+
     /// Begins a new frame with the given `size`.
     pub fn flip(&mut self, size: Size) {
         if size != self.buffers[0].bg_bitmap.size {
