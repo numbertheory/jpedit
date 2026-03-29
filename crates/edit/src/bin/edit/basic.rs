@@ -264,6 +264,18 @@ fn eval_expression(expr: &str) -> Result<String, String> {
         return Err("Unterminated string".to_string());
     }
 
+    if expr.starts_with('"') && expr.ends_with('"') {
+        return Ok(expr[1..expr.len() - 1].to_string());
+    }
+
+    let no_spaces = expr.replace(" ", "");
+    if let Ok(val) = eval_math_expr(&no_spaces) {
+        if val.fract() == 0.0 {
+            return Ok(format!("{:.0}", val));
+        }
+        return Ok(val.to_string());
+    }
+
     if let Some(plus_pos) = expr.find('+') {
         if plus_pos > 0 && plus_pos < expr.len() - 1 {
             let left = eval_expression(&expr[..plus_pos])?;
@@ -283,6 +295,65 @@ fn eval_expression(expr: &str) -> Result<String, String> {
     }
 
     Ok(expr.to_string())
+}
+
+fn eval_math_expr(expr: &str) -> Result<f64, String> {
+    eval_math_add_sub(expr)
+}
+
+fn eval_math_add_sub(expr: &str) -> Result<f64, String> {
+    let mut depth = 0;
+    for (i, c) in expr.char_indices().rev() {
+        if c == '(' {
+            depth += 1;
+        } else if c == ')' {
+            depth -= 1;
+        } else if depth == 0 && (c == '+' || c == '-') && i > 0 {
+            let prev_char = expr[..i].chars().last().unwrap();
+            if prev_char == '+' || prev_char == '-' || prev_char == '*' || prev_char == '/' {
+                continue;
+            }
+            let left = eval_math_add_sub(&expr[..i])?;
+            let right = eval_math_mul_div(&expr[i + 1..])?;
+            if c == '+' {
+                return Ok(left + right);
+            } else {
+                return Ok(left - right);
+            }
+        }
+    }
+    eval_math_mul_div(expr)
+}
+
+fn eval_math_mul_div(expr: &str) -> Result<f64, String> {
+    let mut depth = 0;
+    for (i, c) in expr.char_indices().rev() {
+        if c == '(' {
+            depth += 1;
+        } else if c == ')' {
+            depth -= 1;
+        } else if depth == 0 && (c == '*' || c == '/') && i > 0 {
+            let left = eval_math_mul_div(&expr[..i])?;
+            let right = eval_math_value(&expr[i + 1..])?;
+            if c == '*' {
+                return Ok(left * right);
+            } else {
+                if right == 0.0 {
+                    return Err("Division by zero".to_string());
+                }
+                return Ok(left / right);
+            }
+        }
+    }
+    eval_math_value(expr)
+}
+
+fn eval_math_value(expr: &str) -> Result<f64, String> {
+    let expr = expr.trim();
+    if expr.starts_with('(') && expr.ends_with(')') {
+        return eval_math_add_sub(&expr[1..expr.len() - 1]);
+    }
+    f64::from_str(expr).map_err(|_| format!("Invalid number: {}", expr))
 }
 
 fn wait_for_key_raw<R: Read>(tty_in: &mut R) {
