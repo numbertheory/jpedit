@@ -24,8 +24,17 @@ struct ProgramLine {
 pub fn run_basic_from_document(state: &crate::State) {
     if let Some(doc) = state.documents.active() {
         let tb = doc.buffer.borrow();
-        let source_bytes = tb.read_forward(0);
-        let source = String::from_utf8_lossy(source_bytes);
+        let mut source_bytes = Vec::with_capacity(tb.text_length());
+        let mut off = 0;
+        loop {
+            let chunk = tb.read_forward(off);
+            if chunk.is_empty() {
+                break;
+            }
+            source_bytes.extend_from_slice(chunk);
+            off += chunk.len();
+        }
+        let source = String::from_utf8_lossy(&source_bytes);
         run_basic(&source);
     }
 }
@@ -217,10 +226,7 @@ fn execute_program<W: Write, R: Read>(
             Statement::Print(args) => {
                 for arg in args {
                     let arg = arg.trim();
-                    if arg.starts_with('"') && arg.ends_with('"') && arg.len() >= 2 {
-                        let text = &arg[1..arg.len() - 1];
-                        write!(tty_out, "{}", text).map_err(|e| e.to_string())?;
-                    } else if !arg.is_empty() {
+                    if !arg.is_empty() {
                         let evaluated = eval_expression(arg)?;
                         write!(tty_out, "{}", evaluated).map_err(|e| e.to_string())?;
                     }
@@ -257,41 +263,43 @@ fn execute_program<W: Write, R: Read>(
 
 fn eval_expression(expr: &str) -> Result<String, String> {
     let expr = expr.trim();
+    if expr.is_empty() {
+        return Ok("".to_string());
+    }
 
-    if (expr.starts_with('"') && expr.ends_with('"'))
-        || (expr.starts_with('"') && !expr.contains('"'))
-    {
+    if !expr.contains('"') {
+        let no_spaces = expr.replace(" ", "");
+        if let Ok(val) = eval_math_expr(&no_spaces) {
+            if val.fract() == 0.0 {
+                return Ok(format!("{:.0}", val));
+            }
+            return Ok(val.to_string());
+        }
+    }
+
+    let mut in_quotes = false;
+    let mut plus_pos = None;
+    for (i, c) in expr.char_indices().rev() {
+        if c == '"' {
+            in_quotes = !in_quotes;
+        } else if c == '+' && !in_quotes {
+            plus_pos = Some(i);
+            break;
+        }
+    }
+
+    if in_quotes {
         return Err("Unterminated string".to_string());
     }
 
-    if expr.starts_with('"') && expr.ends_with('"') {
+    if let Some(pos) = plus_pos {
+        let left = eval_expression(&expr[..pos])?;
+        let right = eval_expression(&expr[pos + 1..])?;
+        return Ok(format!("{}{}", left, right));
+    }
+
+    if expr.starts_with('"') && expr.ends_with('"') && expr.len() >= 2 {
         return Ok(expr[1..expr.len() - 1].to_string());
-    }
-
-    let no_spaces = expr.replace(" ", "");
-    if let Ok(val) = eval_math_expr(&no_spaces) {
-        if val.fract() == 0.0 {
-            return Ok(format!("{:.0}", val));
-        }
-        return Ok(val.to_string());
-    }
-
-    if let Some(plus_pos) = expr.find('+') {
-        if plus_pos > 0 && plus_pos < expr.len() - 1 {
-            let left = eval_expression(&expr[..plus_pos])?;
-            let right = eval_expression(&expr[plus_pos + 1..])?;
-            return Ok(format!("{}{}", left, right));
-        }
-    }
-
-    if let Ok(num) = i64::from_str(expr) {
-        return Ok(num.to_string());
-    }
-    if let Ok(num) = f64::from_str(expr) {
-        if num.fract() == 0.0 {
-            return Ok(format!("{:.0}", num));
-        }
-        return Ok(num.to_string());
     }
 
     Ok(expr.to_string())
