@@ -6,7 +6,7 @@ This fork of [Microsoft Edit](https://github.com/microsoft/edit) also includes a
 
 ![Screenshot of Edit with the About dialog in the foreground](./assets/code.png)
 ![Screenshot of Edit with the About dialog in the foreground](./assets/run.png)
-![Screenshot of Edit with the About dialog in the foreground](./assets/output.png)
+![Screenshot of Edit with the About dialog in the foreground](./assets/output-basic.png)
 
 ![Screenshot of Edit with the About dialog in the foreground](./assets/edit_hero_image.png)
 
