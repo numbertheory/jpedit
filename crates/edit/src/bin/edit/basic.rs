@@ -278,13 +278,20 @@ fn eval_expression(expr: &str) -> Result<String, String> {
     }
 
     let mut in_quotes = false;
+    let mut depth = 0;
     let mut plus_pos = None;
     for (i, c) in expr.char_indices().rev() {
         if c == '"' {
             in_quotes = !in_quotes;
-        } else if c == '+' && !in_quotes {
-            plus_pos = Some(i);
-            break;
+        } else if !in_quotes {
+            if c == ')' {
+                depth += 1;
+            } else if c == '(' {
+                depth -= 1;
+            } else if c == '+' && depth == 0 {
+                plus_pos = Some(i);
+                break;
+            }
         }
     }
 
@@ -302,6 +309,10 @@ fn eval_expression(expr: &str) -> Result<String, String> {
         return Ok(expr[1..expr.len() - 1].to_string());
     }
 
+    if expr.starts_with('(') && expr.ends_with(')') {
+        return eval_expression(&expr[1..expr.len() - 1]);
+    }
+
     Ok(expr.to_string())
 }
 
@@ -312,9 +323,9 @@ fn eval_math_expr(expr: &str) -> Result<f64, String> {
 fn eval_math_add_sub(expr: &str) -> Result<f64, String> {
     let mut depth = 0;
     for (i, c) in expr.char_indices().rev() {
-        if c == '(' {
+        if c == ')' {
             depth += 1;
-        } else if c == ')' {
+        } else if c == '(' {
             depth -= 1;
         } else if depth == 0 && (c == '+' || c == '-') && i > 0 {
             let prev_char = expr[..i].chars().last().unwrap();
@@ -336,9 +347,9 @@ fn eval_math_add_sub(expr: &str) -> Result<f64, String> {
 fn eval_math_mul_div(expr: &str) -> Result<f64, String> {
     let mut depth = 0;
     for (i, c) in expr.char_indices().rev() {
-        if c == '(' {
+        if c == ')' {
             depth += 1;
-        } else if c == ')' {
+        } else if c == '(' {
             depth -= 1;
         } else if depth == 0 && (c == '*' || c == '/') && i > 0 {
             let left = eval_math_mul_div(&expr[..i])?;
