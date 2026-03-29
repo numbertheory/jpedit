@@ -1,29 +1,14 @@
-# ![Application Icon for Edit](./assets/edit.svg) Edit
+# JPEdit
 
-A simple editor for simple needs (plus a BASIC interpreter if you need that!)
+A fork of a simple editor for simple needs (plus a BASIC interpreter if you need that!)
 
-This editor pays homage to the classic [MS-DOS Editor](https://en.wikipedia.org/wiki/MS-DOS_Editor), but with a modern interface and input controls similar to VS Code. The goal is to provide an accessible editor that even users largely unfamiliar with terminals can easily use.
-
-This fork also includes a BASIC interpreter to run the current open file as a BASIC program.
+This fork of [Microsoft Edit](https://github.com/microsoft/edit) also includes a BASIC interpreter to run the current open file as a BASIC program. This feature will never be put into the upstream project, and should be used just for fun. More comprehensive BASIC interpreters exist, and due to constraints of terminal emulators, it will never have support for things like graphics.
 
 ![Screenshot of Edit with the About dialog in the foreground](./assets/code.png)
 ![Screenshot of Edit with the About dialog in the foreground](./assets/run.png)
 ![Screenshot of Edit with the About dialog in the foreground](./assets/output.png)
 
 ![Screenshot of Edit with the About dialog in the foreground](./assets/edit_hero_image.png)
-
-## Installation
-
-[![Packaging status](https://repology.org/badge/vertical-allrepos/microsoft-edit.svg?exclude_unsupported=1)](https://repology.org/project/microsoft-edit/versions)
-
-You can also download binaries from [our Releases page](https://github.com/microsoft/edit/releases/latest).
-
-### Windows
-
-You can install the latest version with WinGet:
-```powershell
-winget install Microsoft.Edit
-```
 
 ## Build Instructions
 
@@ -44,44 +29,10 @@ Environment variable | Description
 `EDIT_CFG_ICU*` | See [ICU library name (SONAME)](#icu-library-name-soname) for details.
 `EDIT_CFG_LANGUAGES` | A comma-separated list of languages to include in the build. See [i18n/edit.toml](i18n/edit.toml) for available languages.
 
-## Notes to Package Maintainers
+### BASIC Commands
 
-### Package Naming
+The supported BASIC commands are very small so far, and a little buggy. Use at your own risk.
 
-The canonical executable name is "edit" and the alternative name is "msedit".
-We're aware of the potential conflict of "edit" with existing commands and recommend alternatively naming packages and executables "msedit".
-Names such as "ms-edit" should be avoided.
-Assigning an "edit" alias is recommended, if possible.
-
-### ICU library name (SONAME)
-
-This project _optionally_ depends on the ICU library for its Search and Replace functionality.
-By default, the project will look for a SONAME without version suffix:
-* Windows: `icuuc.dll`
-* macOS: `libicuuc.dylib`
-* UNIX, and other OS: `libicuuc.so`
-
-If your installation uses a different SONAME, please set the following environment variable at build time:
-* `EDIT_CFG_ICUUC_SONAME`:
-  For instance, `libicuuc.so.76`.
-* `EDIT_CFG_ICUI18N_SONAME`:
-  For instance, `libicui18n.so.76`.
-
-Additionally, this project assumes that the ICU exports are exported without `_` prefix and without version suffix, such as `u_errorName`.
-If your installation uses versioned exports, please set:
-* `EDIT_CFG_ICU_CPP_EXPORTS`:
-  If set to `true`, it'll look for C++ symbols such as `_u_errorName`.
-  Enabled by default on macOS.
-* `EDIT_CFG_ICU_RENAMING_VERSION`:
-  If set to a version number, such as `76`, it'll look for symbols such as `u_errorName_76`.
-
-Finally, you can set the following environment variables:
-* `EDIT_CFG_ICU_RENAMING_AUTO_DETECT`:
-  If set to `true`, the executable will try to detect the `EDIT_CFG_ICU_RENAMING_VERSION` value at runtime.
-  The way it does this is not officially supported by ICU and as such is not recommended to be relied upon.
-  Enabled by default on UNIX (excluding macOS) if no other options are set.
-
-To test your settings, run `cargo test` again but with the `--ignored` flag. For instance:
-```sh
-cargo test -- --ignored
-```
+1. PRINT 
+2. GOTO
+3. END
