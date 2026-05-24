@@ -87,8 +87,8 @@ pub const DEFAULT_THEME: [StraightRgba; INDEXED_COLORS_COUNT] = [
     StraightRgba::from_be(0xbebebeff), // Foreground
 ];
 
-/// Classic WordPerfect 5.1 / 6.0 for DOS theme.
-pub const WORDPERFECT_THEME: [StraightRgba; INDEXED_COLORS_COUNT] = [
+/// Classic blue-background theme.
+pub const CLASSIC_BLUE_THEME: [StraightRgba; INDEXED_COLORS_COUNT] = [
     StraightRgba::from_be(0x000000ff), // Black
     StraightRgba::from_be(0xbe2c21ff), // Red
     StraightRgba::from_be(0x3fae3aff), // Green

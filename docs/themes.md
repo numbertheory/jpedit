@@ -9,7 +9,7 @@ The following themes are available:
 | Theme Name | Description |
 | --- | --- |
 | `"default"` | The default theme, matching Windows Terminal's Ottosson palette. |
-| `"wordperfect"` | Classic solid blue background with bright white text. Inspired by WordPerfect for DOS. |
+| `"classicblue"` | Classic solid blue background with bright white text. |
 | `"classic"` | Retro green-on-black terminal look. |
 | `"paper"` | Dark grey text on an off-white background. |
 | `"solarized-dark"` | Low-contrast theme with a teal/blue base. |
@@ -25,7 +25,7 @@ Open your `settings.json` and add or update the `"theme"` key:
 
 ```json
 {
-    "theme": "wordperfect"
+    "theme": "classicblue"
 }
 ```
 

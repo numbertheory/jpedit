@@ -64,7 +64,7 @@ fn main() -> process::ExitCode {
 
 fn setup_styles(tui: &mut Tui, state: &mut State) {
     let indexed_colors = match Settings::borrow().theme.as_deref() {
-        Some("wordperfect") => framebuffer::WORDPERFECT_THEME,
+        Some("classicblue") => framebuffer::CLASSIC_BLUE_THEME,
         Some("classic") => framebuffer::CLASSIC_TERMINAL_THEME,
         Some("paper") => framebuffer::PAPER_THEME,
         Some("solarized-dark") => framebuffer::SOLARIZED_DARK_THEME,
@@ -79,7 +79,7 @@ fn setup_styles(tui: &mut Tui, state: &mut State) {
     tui.setup_indexed_colors(indexed_colors);
 
     let settings = Settings::borrow();
-    if settings.theme.as_deref() == Some("wordperfect") {
+    if settings.theme.as_deref() == Some("classicblue") {
         state.menubar_color_bg = tui.indexed(IndexedColor::White);
         state.menubar_color_fg = tui.indexed(IndexedColor::Blue);
     } else {
@@ -103,6 +103,8 @@ fn setup_styles(tui: &mut Tui, state: &mut State) {
 
     // Apply settings changes to all documents.
     let settings = Settings::borrow();
+    let theme_is_classic_blue = settings.theme.as_deref() == Some("classicblue");
+
     for doc in state.documents.iter() {
         let mut tb = doc.buffer.borrow_mut();
         if let Some(col) = settings.word_wrap_column {
@@ -111,6 +113,7 @@ fn setup_styles(tui: &mut Tui, state: &mut State) {
         if !state.toolbars_hidden {
             tb.set_margin_enabled(true);
         }
+        tb.set_line_highlight_enabled(!theme_is_classic_blue);
     }
 }
 

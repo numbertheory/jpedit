@@ -25,7 +25,7 @@ impl Settings {
     /// Fills the given settings.json text buffer with some initial contents for convenience.
     pub fn bootstrap(tb: &mut TextBuffer) {
         tb.set_crlf(false);
-        tb.write_raw(b"{\n    \"wordWrapColumn\": 80,\n    \"wordWrapDefault\": true,\n    \"theme\": \"wordperfect\"\n}\n");
+        tb.write_raw(b"{\n    \"wordWrapColumn\": 80,\n    \"wordWrapDefault\": true,\n    \"theme\": \"classicblue\"\n}\n");
         tb.cursor_move_to_logical(Default::default());
         tb.mark_as_clean();
     }
