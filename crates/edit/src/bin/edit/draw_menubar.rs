@@ -58,7 +58,7 @@ fn draw_menu_file(ctx: &mut Context, state: &mut State) {
         && !path.as_os_str().is_empty()
         && ctx.menubar_menu_button(loc(LocId::FilePreferences), 'P', vk::NULL)
     {
-        match state.documents.add_file_path(path) {
+        match state.documents.add_file_path(path, state.toolbars_hidden) {
             Ok(doc) => {
                 if let mut tb = doc.buffer.borrow_mut()
                     && tb.text_length() == 0

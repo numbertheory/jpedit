@@ -62,6 +62,58 @@ fn main() -> process::ExitCode {
     }
 }
 
+fn setup_styles(tui: &mut Tui, state: &mut State) {
+    let indexed_colors = match Settings::borrow().theme.as_deref() {
+        Some("wordperfect") => framebuffer::WORDPERFECT_THEME,
+        Some("classic") => framebuffer::CLASSIC_TERMINAL_THEME,
+        Some("paper") => framebuffer::PAPER_THEME,
+        Some("solarized-dark") => framebuffer::SOLARIZED_DARK_THEME,
+        Some("gruvbox-dark") => framebuffer::GRUVBOX_DARK_THEME,
+        Some("nord") => framebuffer::NORD_THEME,
+        Some("monokai") => framebuffer::MONOKAI_THEME,
+        Some("dracula") => framebuffer::DRACULA_THEME,
+        Some("everforest-dark") => framebuffer::EVERFOREST_DARK_THEME,
+        _ => framebuffer::DEFAULT_THEME,
+    };
+
+    tui.setup_indexed_colors(indexed_colors);
+
+    let settings = Settings::borrow();
+    if settings.theme.as_deref() == Some("wordperfect") {
+        state.menubar_color_bg = tui.indexed(IndexedColor::White);
+        state.menubar_color_fg = tui.indexed(IndexedColor::Blue);
+    } else {
+        state.menubar_color_bg = tui.indexed(IndexedColor::Background).oklab_blend(tui.indexed_alpha(
+            IndexedColor::BrightBlue,
+            1,
+            2,
+        ));
+        state.menubar_color_fg = tui.contrasted(state.menubar_color_bg);
+    }
+    drop(settings);
+
+    let floater_bg = tui
+        .indexed_alpha(IndexedColor::Background, 2, 3)
+        .oklab_blend(tui.indexed_alpha(IndexedColor::Foreground, 1, 3));
+    let floater_fg = tui.contrasted(floater_bg);
+    tui.set_floater_default_bg(floater_bg);
+    tui.set_floater_default_fg(floater_fg);
+    tui.set_modal_default_bg(floater_bg);
+    tui.set_modal_default_fg(floater_fg);
+
+    // Apply settings changes to all documents.
+    let settings = Settings::borrow();
+    for doc in state.documents.iter() {
+        let mut tb = doc.buffer.borrow_mut();
+        if let Some(col) = settings.word_wrap_column {
+            tb.set_word_wrap_column(col as isize);
+        }
+        if !state.toolbars_hidden {
+            tb.set_margin_enabled(true);
+        }
+    }
+}
+
 fn run() -> apperr::Result<()> {
     // Init `sys` first, as everything else may depend on its functionality (IO, function pointers, etc.).
     let _sys_deinit = sys::init();
@@ -70,16 +122,16 @@ fn run() -> apperr::Result<()> {
     // Init the `loc` module, so that error messages are localized.
     localization::init();
 
+    if let Err(err) = Settings::reload() {
+        sys::write_stdout(&format!("Settings error: {}\n", FormatApperr::from(err)));
+    }
+
     let mut state = State::new()?;
     if handle_args(&mut state)? {
         return Ok(());
     }
 
     handle_stdin(&mut state)?;
-
-    if let Err(err) = Settings::reload() {
-        state.add_error(err);
-    }
 
     // Switch the terminal to raw mode which prevents the user from pressing Ctrl+C.
     // `handle_args` may want to print a help message (must not fail),
@@ -93,32 +145,37 @@ fn run() -> apperr::Result<()> {
 
     let _restore = setup_terminal(&mut tui, &mut state, &mut vt_parser);
 
-    state.menubar_color_bg = tui.indexed(IndexedColor::Background).oklab_blend(tui.indexed_alpha(
-        IndexedColor::BrightBlue,
-        1,
-        2,
-    ));
-    state.menubar_color_fg = tui.contrasted(state.menubar_color_bg);
-    let floater_bg = tui
-        .indexed_alpha(IndexedColor::Background, 2, 3)
-        .oklab_blend(tui.indexed_alpha(IndexedColor::Foreground, 1, 3));
-    let floater_fg = tui.contrasted(floater_bg);
+    setup_styles(&mut tui, &mut state);
+
     tui.setup_modifier_translations(ModifierTranslations {
         ctrl: loc(LocId::Ctrl),
         alt: loc(LocId::Alt),
         shift: loc(LocId::Shift),
     });
-    tui.set_floater_default_bg(floater_bg);
-    tui.set_floater_default_fg(floater_fg);
-    tui.set_modal_default_bg(floater_bg);
-    tui.set_modal_default_fg(floater_fg);
 
     sys::inject_window_size_into_stdin();
 
     #[cfg(feature = "debug-latency")]
     let mut last_latency_width = 0;
 
+    let mut settings_mtime = None;
+    let mut settings_last_check = std::time::Instant::now();
+
     loop {
+        // Poll for settings changes, but throttled to every 2 seconds.
+        let now = std::time::Instant::now();
+        if now - settings_last_check > std::time::Duration::from_secs(2) {
+            settings_last_check = now;
+            let current_mtime = Settings::borrow().path.metadata().and_then(|m| m.modified()).ok();
+            if current_mtime != settings_mtime {
+                settings_mtime = current_mtime;
+                if let Err(err) = Settings::reload() {
+                    state.add_error(err);
+                }
+                setup_styles(&mut tui, &mut state);
+            }
+        }
+
         #[cfg(feature = "debug-latency")]
         let time_beg;
         #[cfg(feature = "debug-latency")]
@@ -274,7 +331,7 @@ fn handle_args(state: &mut State) -> apperr::Result<bool> {
     }
 
     for p in &paths {
-        state.documents.add_file_path(p)?;
+        state.documents.add_file_path(p, state.toolbars_hidden)?;
     }
 
     if dir.is_none()
@@ -292,13 +349,13 @@ fn handle_args(state: &mut State) -> apperr::Result<bool> {
 // (may exit early) and before `switch_modes` (needs a console stdin).
 fn handle_stdin(state: &mut State) -> apperr::Result<()> {
     if let Some(mut file) = sys::reopen_stdin_if_redirected()? {
-        let doc = state.documents.add_untitled()?;
+        let doc = state.documents.add_untitled(state.toolbars_hidden)?;
         let mut tb = doc.buffer.borrow_mut();
         tb.read_file(&mut file, None)?;
         tb.mark_as_dirty();
     } else if state.documents.len() == 0 {
         // No files were passed, and stdin is not redirected.
-        state.documents.add_untitled()?;
+        state.documents.add_untitled(state.toolbars_hidden)?;
     }
     Ok(())
 }
@@ -320,9 +377,15 @@ fn print_version() {
 }
 
 fn draw(ctx: &mut Context, state: &mut State) {
-    draw_menubar(ctx, state);
+    let bg = ctx.indexed(IndexedColor::Background);
+    ctx.attr_background_rgba(bg);
+    if !state.toolbars_hidden {
+        draw_menubar(ctx, state);
+    }
     draw_editor(ctx, state);
-    draw_statusbar(ctx, state);
+    if !state.toolbars_hidden {
+        draw_statusbar(ctx, state);
+    }
 
     if state.wants_close {
         draw_handle_wants_close(ctx, state);
@@ -387,6 +450,11 @@ fn draw(ctx: &mut Context, state: &mut State) {
             state.wants_search.focus = true;
         } else if key == vk::F3 {
             search_execute(ctx, state, SearchAction::Search);
+        } else if key == vk::F11 {
+            state.toolbars_hidden = !state.toolbars_hidden;
+            for doc in state.documents.iter() {
+                doc.buffer.borrow_mut().set_margin_enabled(!state.toolbars_hidden);
+            }
         } else {
             return;
         }
@@ -678,7 +746,7 @@ fn setup_terminal(tui: &mut Tui, state: &mut State, vt_parser: &mut vt::Parser) 
         state.documents.reflow_all();
     }
 
-    if color_responses == indexed_colors.len() {
+    if color_responses == framebuffer::INDEXED_COLORS_COUNT {
         tui.setup_indexed_colors(indexed_colors);
     }
 

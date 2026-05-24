@@ -20,10 +20,18 @@ pub fn draw_editor(ctx: &mut Context, state: &mut State) {
 
     let size = ctx.size();
     // TODO: The layout code should be able to just figure out the height on its own.
-    let height_reduction = match state.wants_search.kind {
-        StateSearchKind::Search => 4,
-        StateSearchKind::Replace => 5,
-        _ => 2,
+    let height_reduction = if state.toolbars_hidden {
+        match state.wants_search.kind {
+            StateSearchKind::Search => 3,
+            StateSearchKind::Replace => 4,
+            _ => 0,
+        }
+    } else {
+        match state.wants_search.kind {
+            StateSearchKind::Search => 4,
+            StateSearchKind::Replace => 5,
+            _ => 2,
+        }
     };
 
     if let Some(doc) = state.documents.active() {
