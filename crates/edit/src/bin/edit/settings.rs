@@ -13,6 +13,7 @@ pub struct Settings {
     pub path: PathBuf,
     pub file_associations: Vec<(String, &'static Language)>,
     pub word_wrap_column: Option<i32>,
+    pub word_wrap_default: Option<bool>,
     pub theme: Option<String>,
 }
 
@@ -24,7 +25,7 @@ impl Settings {
     /// Fills the given settings.json text buffer with some initial contents for convenience.
     pub fn bootstrap(tb: &mut TextBuffer) {
         tb.set_crlf(false);
-        tb.write_raw(b"{\n    \"wordWrapColumn\": 80,\n    \"theme\": \"wordperfect\"\n}\n");
+        tb.write_raw(b"{\n    \"wordWrapColumn\": 80,\n    \"wordWrapDefault\": true,\n    \"theme\": \"wordperfect\"\n}\n");
         tb.cursor_move_to_logical(Default::default());
         tb.mark_as_clean();
     }
@@ -34,6 +35,7 @@ impl Settings {
             path: PathBuf::new(),
             file_associations: Vec::new(),
             word_wrap_column: None,
+            word_wrap_default: None,
             theme: None,
         }
     }
@@ -91,6 +93,10 @@ impl Settings {
 
         if let Some(w) = root.get("wordWrapColumn") {
             self.word_wrap_column = w.as_number().map(|n| n as i32);
+        }
+
+        if let Some(w) = root.get("wordWrapDefault") {
+            self.word_wrap_default = w.as_bool();
         }
 
         if let Some(t) = root.get("theme") {

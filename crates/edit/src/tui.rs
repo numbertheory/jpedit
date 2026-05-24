@@ -2186,16 +2186,22 @@ impl<'a> Context<'a, '_> {
                 }
 
                 let mut make_cursor_visible;
+                let tb_width_changed;
                 {
                     let mut tb = content.buffer.borrow_mut();
                     make_cursor_visible = tb.take_cursor_visibility_request();
-                    make_cursor_visible |= tb.set_width(text_width);
+                    tb_width_changed = tb.set_width(text_width);
+                    make_cursor_visible |= tb_width_changed;
                 }
 
                 make_cursor_visible |= self.textarea_handle_input(content, &node_prev, single_line);
 
                 if make_cursor_visible {
                     self.textarea_make_cursor_visible(content, &node_prev);
+                }
+
+                if tb_width_changed {
+                    self.needs_rerender();
                 }
             } else {
                 debug_assert!(false);
@@ -2213,13 +2219,11 @@ impl<'a> Context<'a, '_> {
 
         self.textarea_adjust_scroll_offset(content);
 
-        if single_line {
-            node.attributes.fg = self.indexed(IndexedColor::Foreground);
-            node.attributes.bg = self.indexed(IndexedColor::Background);
-            if !content.has_focus {
-                node.attributes.fg = self.contrasted(node.attributes.bg);
-                node.attributes.bg = self.indexed_alpha(IndexedColor::Background, 1, 2);
-            }
+        node.attributes.fg = self.indexed(IndexedColor::Foreground);
+        node.attributes.bg = self.indexed(IndexedColor::Background);
+        if single_line && !content.has_focus {
+            node.attributes.fg = self.contrasted(node.attributes.bg);
+            node.attributes.bg = self.indexed_alpha(IndexedColor::Background, 1, 2);
         }
 
         node.attributes.focusable = true;

@@ -1927,7 +1927,7 @@ impl TextBuffer {
                     selection_pos_end = cursor.visual_pos.x;
                 }
 
-                let left = destination.left + self.margin_width - origin.x;
+                let left = destination.left + self.layout_padding_left + self.margin_width - origin.x;
                 let top = destination.top + y;
                 let rect = Rect {
                     left: left + selection_pos_beg.max(origin.x),
@@ -2170,7 +2170,11 @@ impl TextBuffer {
 
         // Text area boundaries in screen coordinates (excluding margin).
         let text_left = destination.left + self.layout_padding_left + self.margin_width;
-        let text_right = destination.right;
+        let text_right = if self.word_wrap_column > 0 {
+            (text_left + self.word_wrap_column - origin.x).min(destination.right)
+        } else {
+            destination.right
+        };
 
         for logical_y in logical_y_range {
             // Seek cursor to the start of this logical line for efficient lookups.

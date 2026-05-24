@@ -99,9 +99,9 @@ pub const WORDPERFECT_THEME: [StraightRgba; INDEXED_COLORS_COUNT] = [
     StraightRgba::from_be(0xbebebeff), // White
     StraightRgba::from_be(0x545454ff), // BrightBlack
     StraightRgba::from_be(0xff3e30ff), // BrightRed
-    StraightRgba::from_be(0x58ea51ff), // BrightGreen
+    StraightRgba::from_be(0x5454ffff), // BrightBlue (moved to Index 10)
     StraightRgba::from_be(0xffc944ff), // BrightYellow
-    StraightRgba::from_be(0x5454ffff), // BrightBlue
+    StraightRgba::from_be(0x58ea51ff), // BrightGreen (moved to Index 12)
     StraightRgba::from_be(0xfc74ffff), // BrightMagenta
     StraightRgba::from_be(0x54ffffff), // BrightCyan
     StraightRgba::from_be(0xffffffff), // BrightWhite
@@ -154,6 +154,144 @@ pub const PAPER_THEME: [StraightRgba; INDEXED_COLORS_COUNT] = [
     // --------
     StraightRgba::from_be(0xf0f0f0ff), // Background (Off-white)
     StraightRgba::from_be(0x333333ff), // Foreground (Dark gray)
+];
+
+/// Solarized Dark theme.
+pub const SOLARIZED_DARK_THEME: [StraightRgba; INDEXED_COLORS_COUNT] = [
+    StraightRgba::from_be(0x073642ff), // Black
+    StraightRgba::from_be(0xdc322fff), // Red
+    StraightRgba::from_be(0x859900ff), // Green
+    StraightRgba::from_be(0xb58900ff), // Yellow
+    StraightRgba::from_be(0x268bd2ff), // Blue
+    StraightRgba::from_be(0xd33682ff), // Magenta
+    StraightRgba::from_be(0x2aa198ff), // Cyan
+    StraightRgba::from_be(0xeee8d5ff), // White
+    StraightRgba::from_be(0x002b36ff), // BrightBlack
+    StraightRgba::from_be(0xcb4b16ff), // BrightRed
+    StraightRgba::from_be(0x586e75ff), // BrightGreen
+    StraightRgba::from_be(0x657b83ff), // BrightYellow
+    StraightRgba::from_be(0x839496ff), // BrightBlue
+    StraightRgba::from_be(0x6c71c4ff), // BrightMagenta
+    StraightRgba::from_be(0x93a1a1ff), // BrightCyan
+    StraightRgba::from_be(0xfdf6e3ff), // BrightWhite
+    // --------
+    StraightRgba::from_be(0x002b36ff), // Background
+    StraightRgba::from_be(0x839496ff), // Foreground
+];
+
+/// Gruvbox Dark theme.
+pub const GRUVBOX_DARK_THEME: [StraightRgba; INDEXED_COLORS_COUNT] = [
+    StraightRgba::from_be(0x282828ff), // Black
+    StraightRgba::from_be(0xcc241dff), // Red
+    StraightRgba::from_be(0x98971aff), // Green
+    StraightRgba::from_be(0xd79921ff), // Yellow
+    StraightRgba::from_be(0x458588ff), // Blue
+    StraightRgba::from_be(0xb16286ff), // Magenta
+    StraightRgba::from_be(0x689d6aff), // Cyan
+    StraightRgba::from_be(0xa89984ff), // White
+    StraightRgba::from_be(0x928374ff), // BrightBlack
+    StraightRgba::from_be(0xfb4934ff), // BrightRed
+    StraightRgba::from_be(0xb8bb26ff), // BrightGreen
+    StraightRgba::from_be(0xfabc29ff), // BrightYellow
+    StraightRgba::from_be(0x83a598ff), // BrightBlue
+    StraightRgba::from_be(0xd3869bff), // BrightMagenta
+    StraightRgba::from_be(0x8ec07cff), // BrightCyan
+    StraightRgba::from_be(0xebdbb2ff), // BrightWhite
+    // --------
+    StraightRgba::from_be(0x282828ff), // Background
+    StraightRgba::from_be(0xebdbb2ff), // Foreground
+];
+
+/// Nord theme.
+pub const NORD_THEME: [StraightRgba; INDEXED_COLORS_COUNT] = [
+    StraightRgba::from_be(0x3b4252ff), // Black
+    StraightRgba::from_be(0xbf616aff), // Red
+    StraightRgba::from_be(0xa3be8cff), // Green
+    StraightRgba::from_be(0xebcb8bff), // Yellow
+    StraightRgba::from_be(0x81a1c1ff), // Blue
+    StraightRgba::from_be(0xb48eadff), // Magenta
+    StraightRgba::from_be(0x88c0d0ff), // Cyan
+    StraightRgba::from_be(0xe5e9f0ff), // White
+    StraightRgba::from_be(0x4c566aff), // BrightBlack
+    StraightRgba::from_be(0xbf616aff), // BrightRed
+    StraightRgba::from_be(0xa3be8cff), // BrightGreen
+    StraightRgba::from_be(0xebcb8bff), // BrightYellow
+    StraightRgba::from_be(0x81a1c1ff), // BrightBlue
+    StraightRgba::from_be(0xb48eadff), // BrightMagenta
+    StraightRgba::from_be(0x8fbcbbff), // BrightCyan
+    StraightRgba::from_be(0xeceff4ff), // BrightWhite
+    // --------
+    StraightRgba::from_be(0x2e3440ff), // Background
+    StraightRgba::from_be(0xd8dee9ff), // Foreground
+];
+
+/// Monokai theme.
+pub const MONOKAI_THEME: [StraightRgba; INDEXED_COLORS_COUNT] = [
+    StraightRgba::from_be(0x272822ff), // Black
+    StraightRgba::from_be(0xf92672ff), // Red
+    StraightRgba::from_be(0xa6e22eff), // Green
+    StraightRgba::from_be(0xf4bf75ff), // Yellow
+    StraightRgba::from_be(0x66d9efff), // Blue
+    StraightRgba::from_be(0xae81ffff), // Magenta
+    StraightRgba::from_be(0xa1efe4ff), // Cyan
+    StraightRgba::from_be(0xf8f8f2ff), // White
+    StraightRgba::from_be(0x75715eff), // BrightBlack
+    StraightRgba::from_be(0xf92672ff), // BrightRed
+    StraightRgba::from_be(0xa6e22eff), // BrightGreen
+    StraightRgba::from_be(0xf4bf75ff), // BrightYellow
+    StraightRgba::from_be(0x66d9efff), // BrightBlue
+    StraightRgba::from_be(0xae81ffff), // BrightMagenta
+    StraightRgba::from_be(0xa1efe4ff), // BrightCyan
+    StraightRgba::from_be(0xf8f8f2ff), // BrightWhite
+    // --------
+    StraightRgba::from_be(0x272822ff), // Background
+    StraightRgba::from_be(0xf8f8f2ff), // Foreground
+];
+
+/// Dracula theme.
+pub const DRACULA_THEME: [StraightRgba; INDEXED_COLORS_COUNT] = [
+    StraightRgba::from_be(0x21222cff), // Black
+    StraightRgba::from_be(0xff5555ff), // Red
+    StraightRgba::from_be(0x50fa7bff), // Green
+    StraightRgba::from_be(0xf1fa8cff), // Yellow
+    StraightRgba::from_be(0xbd93f9ff), // Blue
+    StraightRgba::from_be(0xff79c6ff), // Magenta
+    StraightRgba::from_be(0x8be9fdff), // Cyan
+    StraightRgba::from_be(0xf8f8f2ff), // White
+    StraightRgba::from_be(0x6272a4ff), // BrightBlack
+    StraightRgba::from_be(0xff5555ff), // BrightRed
+    StraightRgba::from_be(0x50fa7bff), // BrightGreen
+    StraightRgba::from_be(0xf1fa8cff), // BrightYellow
+    StraightRgba::from_be(0xbd93f9ff), // BrightBlue
+    StraightRgba::from_be(0xff79c6ff), // BrightMagenta
+    StraightRgba::from_be(0x8be9fdff), // BrightCyan
+    StraightRgba::from_be(0xffffffff), // BrightWhite
+    // --------
+    StraightRgba::from_be(0x282a36ff), // Background
+    StraightRgba::from_be(0xf8f8f2ff), // Foreground
+];
+
+/// Everforest Dark theme.
+pub const EVERFOREST_DARK_THEME: [StraightRgba; INDEXED_COLORS_COUNT] = [
+    StraightRgba::from_be(0x2b3339ff), // Black
+    StraightRgba::from_be(0xe67e80ff), // Red
+    StraightRgba::from_be(0xa7c080ff), // Green
+    StraightRgba::from_be(0xdbbc7fff), // Yellow
+    StraightRgba::from_be(0x7fbbb3ff), // Blue
+    StraightRgba::from_be(0xd699b6ff), // Magenta
+    StraightRgba::from_be(0x83c092ff), // Cyan
+    StraightRgba::from_be(0xd3c6aaff), // White
+    StraightRgba::from_be(0x475258ff), // BrightBlack
+    StraightRgba::from_be(0xe67e80ff), // BrightRed
+    StraightRgba::from_be(0xa7c080ff), // BrightGreen
+    StraightRgba::from_be(0xdbbc7fff), // BrightYellow
+    StraightRgba::from_be(0x7fbbb3ff), // BrightBlue
+    StraightRgba::from_be(0xd699b6ff), // BrightMagenta
+    StraightRgba::from_be(0x83c092ff), // BrightCyan
+    StraightRgba::from_be(0xd3c6aaff), // BrightWhite
+    // --------
+    StraightRgba::from_be(0x2b3339ff), // Background
+    StraightRgba::from_be(0xd3c6aaff), // Foreground
 ];
 
 /// A shoddy framebuffer for terminal applications.

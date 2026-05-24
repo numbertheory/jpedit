@@ -176,6 +176,7 @@ pub struct State {
     pub osc_title_file_status: OscTitleFileStatus,
     pub osc_clipboard_sync: bool,
     pub osc_clipboard_always_send: bool,
+    pub toolbars_hidden: bool,
     pub exit: bool,
 }
 
@@ -226,6 +227,7 @@ impl State {
             osc_title_file_status: Default::default(),
             osc_clipboard_sync: false,
             osc_clipboard_always_send: false,
+            toolbars_hidden: false,
             exit: false,
         })
     }
@@ -244,7 +246,7 @@ impl State {
 }
 
 pub fn draw_add_untitled_document(ctx: &mut Context, state: &mut State) {
-    if let Err(err) = state.documents.add_untitled() {
+    if let Err(err) = state.documents.add_untitled(state.toolbars_hidden) {
         error_log_add(ctx, state, err);
     }
 }

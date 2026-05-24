@@ -127,6 +127,11 @@ impl DocumentManager {
     }
 
     #[inline]
+    pub fn iter(&self) -> std::slice::Iter<'_, Document> {
+        self.list.iter()
+    }
+
+    #[inline]
     pub fn active(&self) -> Option<&Document> {
         self.list.last()
     }
@@ -172,8 +177,8 @@ impl DocumentManager {
         self.list.pop();
     }
 
-    pub fn add_untitled(&mut self) -> apperr::Result<&mut Document> {
-        let buffer = Self::create_buffer()?;
+    pub fn add_untitled(&mut self, state_toolbars_hidden: bool) -> apperr::Result<&mut Document> {
+        let buffer = Self::create_buffer(state_toolbars_hidden)?;
         let mut doc = Document {
             buffer,
             path: None,
@@ -201,7 +206,11 @@ impl DocumentManager {
         doc.new_file_counter = new_file_counter;
     }
 
-    pub fn add_file_path(&mut self, path: &Path) -> apperr::Result<&mut Document> {
+    pub fn add_file_path(
+        &mut self,
+        path: &Path,
+        state_toolbars_hidden: bool,
+    ) -> apperr::Result<&mut Document> {
         let (path, goto) = Self::parse_filename_goto(path);
         let path = path::normalize(path);
 
@@ -222,7 +231,7 @@ impl DocumentManager {
             return Ok(doc);
         }
 
-        let buffer = Self::create_buffer()?;
+        let buffer = Self::create_buffer(state_toolbars_hidden)?;
         {
             if let Some(file) = &mut file {
                 let mut tb = buffer.borrow_mut();
@@ -286,17 +295,20 @@ impl DocumentManager {
         File::create(path).map_err(apperr::Error::from)
     }
 
-    fn create_buffer() -> apperr::Result<RcTextBuffer> {
+    fn create_buffer(state_toolbars_hidden: bool) -> apperr::Result<RcTextBuffer> {
         let buffer = TextBuffer::new_rc(false)?;
         {
             let mut tb = buffer.borrow_mut();
             tb.set_insert_final_newline(!cfg!(windows)); // As mandated by POSIX.
-            tb.set_margin_enabled(true);
+            tb.set_margin_enabled(!state_toolbars_hidden);
             tb.set_line_highlight_enabled(true);
 
             let settings = Settings::borrow();
             if let Some(col) = settings.word_wrap_column {
                 tb.set_word_wrap_column(col as isize);
+            }
+            if settings.word_wrap_default == Some(true) {
+                tb.set_word_wrap(true);
             }
         }
         Ok(buffer)
