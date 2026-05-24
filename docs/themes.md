@@ -1,6 +1,6 @@
 # Available Themes
 
-You can configure the appearance of `edit` by setting the `"theme"` key in your `settings.json`.
+You can configure the appearance of `jpedit` by setting the `"theme"` key in your `settings.json`.
 
 ## Themes
 

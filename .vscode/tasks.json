@@ -1,24 +1,16 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "rust: cargo build",
-            "type": "process",
-            "command": "cargo",
-            "args": [
-                "build",
-                "--package",
-                "edit",
-                "--features",
-                "debug-latency"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [
-                "$rustc"
-            ]
-        }
-    ]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "rust: cargo build",
+      "type": "process",
+      "command": "cargo",
+      "args": ["build", "--package", "jpedit", "--features", "debug-latency"],
+      "group": {
+        "kind": "build",
+        "isDefault": true,
+      },
+      "problemMatcher": ["$rustc"],
+    },
+  ],
 }

@@ -26,11 +26,29 @@ fn main() {
         _ => TargetOs::Unix,
     };
 
+    configure_version();
     compile_lsh();
     compile_i18n();
     configure_icu(target_os);
     #[cfg(windows)]
     configure_windows_binary(target_os);
+}
+
+fn configure_version() {
+    let output = std::process::Command::new("git")
+        .args(["describe", "--tags", "--always", "--dirty"])
+        .output();
+
+    let version = match output {
+        Ok(output) if output.status.success() => {
+            String::from_utf8_lossy(&output.stdout).trim().to_string()
+        }
+        _ => env_opt("CARGO_PKG_VERSION"),
+    };
+
+    println!("cargo::rustc-env=JPE_VERSION={version}");
+    println!("cargo::rerun-if-changed=.git/HEAD");
+    println!("cargo::rerun-if-changed=.git/index");
 }
 
 fn compile_lsh() {
@@ -139,8 +157,8 @@ fn configure_windows_binary(target_os: TargetOs) {
 
     winresource::WindowsResource::new()
         .set_manifest_file(manifest_path)
-        .set("FileDescription", "Microsoft Edit")
-        .set("LegalCopyright", "© Microsoft Corporation. All rights reserved.")
+        .set("FileDescription", "JPEdit")
+        .set("LegalCopyright", "Copyright (c) Microsoft Corporation; fork by numbertheory")
         .set_icon(icon_path)
         .compile()
         .unwrap();

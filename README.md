@@ -1,8 +1,8 @@
-# ![Application Icon for Edit](./assets/edit.svg) Edit
+# ![Application Icon for JPEdit](./assets/edit.svg) JPEdit
 
 A simple editor for simple needs.
 
-This editor pays homage to the classic [MS-DOS Editor](https://en.wikipedia.org/wiki/MS-DOS_Editor), but with a modern interface and input controls similar to VS Code. The goal is to provide an accessible editor that even users largely unfamiliar with terminals can easily use.
+This editor is a fork of the classic-inspired [MS-DOS Editor](https://en.wikipedia.org/wiki/MS-DOS_Editor) homage. The goal is to provide an accessible editor that even users largely unfamiliar with terminals can easily use.
 
 ![Screenshot of Edit with the About dialog in the foreground](./assets/edit_hero_image.png)
 

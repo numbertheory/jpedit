@@ -39,7 +39,7 @@ The overall architecture of the project can be summarized as follows:
 * `src/tui.rs` implements an immediate mode UI. Its module implementation gives an overview how it works and I recommend reading it.
 * `src/vt.rs` implements our VT parser.
 * `src/sys` contains our platform abstractions.
-* Finally, `src/bin/edit` ties everything together.
+* Finally, `src/bin/edit` ties everything together. (Note: Output binary is now `jpedit`)
   It's roughly 90% UI code and business logic.
   It contains a little bit of VT logic in `setup_terminal`.
 

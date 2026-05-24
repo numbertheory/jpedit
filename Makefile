@@ -1,6 +1,6 @@
 .PHONY: all build clean install
 
-BINARY_NAME=edit
+BINARY_NAME=jpedit
 INSTALL_DIR=$(HOME)/.local/bin
 
 all: build

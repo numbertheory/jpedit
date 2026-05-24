@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-use edit::helpers::*;
-use edit::input::{kbmod, vk};
-use edit::tui::*;
+use jpedit::helpers::*;
+use jpedit::input::{kbmod, vk};
+use jpedit::tui::*;
 use stdext::arena_format;
 
 use crate::localization::*;
@@ -159,7 +159,7 @@ pub fn draw_dialog_about(ctx: &mut Context, state: &mut State) {
         ctx.inherit_focus();
         ctx.attr_padding(Rect::three(1, 2, 1));
         {
-            ctx.label("description", "Microsoft Edit");
+            ctx.label("description", "JPEdit");
             ctx.attr_overflow(Overflow::TruncateTail);
             ctx.attr_position(Position::Center);
 
@@ -169,13 +169,17 @@ pub fn draw_dialog_about(ctx: &mut Context, state: &mut State) {
                     ctx.arena(),
                     "{}{}",
                     loc(LocId::AboutDialogVersion),
-                    env!("CARGO_PKG_VERSION")
+                    env!("JPE_VERSION")
                 ),
             );
             ctx.attr_overflow(Overflow::TruncateHead);
             ctx.attr_position(Position::Center);
 
-            ctx.label("copyright", "Copyright (c) Microsoft Corporation");
+            ctx.label("fork", "Forked from Microsoft Edit v2.0.0");
+            ctx.attr_overflow(Overflow::TruncateTail);
+            ctx.attr_position(Position::Center);
+
+            ctx.label("copyright", "Copyright (c) Microsoft Corporation; fork by numbertheory");
             ctx.attr_overflow(Overflow::TruncateTail);
             ctx.attr_position(Position::Center);
 

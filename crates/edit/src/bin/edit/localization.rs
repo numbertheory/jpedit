@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-use edit::sys;
+use jpedit::sys;
 use stdext::AsciiStringHelpers as _;
 use stdext::arena::scratch_arena;
 

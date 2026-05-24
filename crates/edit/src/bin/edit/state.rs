@@ -6,11 +6,11 @@ use std::ffi::{OsStr, OsString};
 use std::mem;
 use std::path::{Path, PathBuf};
 
-use edit::framebuffer::IndexedColor;
-use edit::helpers::*;
-use edit::oklab::StraightRgba;
-use edit::tui::*;
-use edit::{buffer, icu};
+use jpedit::framebuffer::IndexedColor;
+use jpedit::helpers::*;
+use jpedit::oklab::StraightRgba;
+use jpedit::tui::*;
+use jpedit::{buffer, icu};
 
 use crate::apperr;
 use crate::documents::DocumentManager;

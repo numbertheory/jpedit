@@ -20,13 +20,13 @@ use draw_editor::*;
 use draw_filepicker::*;
 use draw_menubar::*;
 use draw_statusbar::*;
-use edit::framebuffer::{self, IndexedColor};
-use edit::helpers::*;
-use edit::input::{self, kbmod, vk};
-use edit::oklab::StraightRgba;
-use edit::tui::*;
-use edit::vt::{self, Token};
-use edit::{base64, path, sys, unicode};
+use jpedit::framebuffer::{self, IndexedColor};
+use jpedit::helpers::*;
+use jpedit::input::{self, kbmod, vk};
+use jpedit::oklab::StraightRgba;
+use jpedit::tui::*;
+use jpedit::vt::{self, Token};
+use jpedit::{base64, path, sys, unicode};
 use localization::*;
 use state::*;
 use stdext::arena::{self, Arena, scratch_arena};
@@ -260,7 +260,7 @@ fn run() -> apperr::Result<()> {
                 );
 
                 // "μs" is 3 bytes and 2 columns.
-                let cols = status.len() as edit::helpers::CoordType - 3 + 2;
+                let cols = status.len() as jpedit::helpers::CoordType - 3 + 2;
 
                 // Since the status may shrink and grow, we may have to overwrite the previous one with whitespace.
                 let padding = (last_latency_width - cols).max(0);
@@ -362,7 +362,7 @@ fn handle_stdin(state: &mut State) -> apperr::Result<()> {
 
 fn print_help() {
     sys::write_stdout(concat!(
-        "Usage: edit [OPTIONS] [FILE[:LINE[:COLUMN]]]\n",
+        "Usage: jpedit [OPTIONS] [FILE[:LINE[:COLUMN]]]\n",
         "Options:\n",
         "    -h, --help       Print this help message\n",
         "    -v, --version    Print the version number\n",
@@ -373,7 +373,7 @@ fn print_help() {
 }
 
 fn print_version() {
-    sys::write_stdout(concat!("edit version ", env!("CARGO_PKG_VERSION"), "\n"));
+    sys::write_stdout(concat!("JPEdit version ", env!("JPE_VERSION"), "\n"));
 }
 
 fn draw(ctx: &mut Context, state: &mut State) {
@@ -499,7 +499,7 @@ fn write_terminal_title<'a>(arena: &'a Arena, output: &mut BString<'a>, state: &
         output.push_str(arena, &sanitize_control_chars(filename));
         output.push_str(arena, " - ");
     }
-    output.push_str(arena, "edit\x1b\\");
+    output.push_str(arena, "JPEdit\x1b\\");
 
     state.osc_title_file_status.filename = filename.to_string();
     state.osc_title_file_status.dirty = dirty;

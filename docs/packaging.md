@@ -2,10 +2,8 @@
 
 ## Package Naming
 
-The canonical executable name is "edit" and the alternative name is "msedit".
-We're aware of the potential conflict of "edit" with existing commands and recommend alternatively naming packages and executables "msedit".
-Names such as "ms-edit" should be avoided.
-Assigning an "edit" alias is recommended, if possible.
+The canonical executable name is "jpedit".
+Assigning a "jpe" alias is recommended, if possible.
 
 ## ICU library name (SONAME)
 

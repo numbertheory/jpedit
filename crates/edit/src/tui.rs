@@ -89,9 +89,9 @@
 //! # Example
 //!
 //! ```
-//! use edit::helpers::Size;
-//! use edit::input::Input;
-//! use edit::tui::*;
+//! use jpedit::helpers::Size;
+//! use jpedit::input::Input;
+//! use jpedit::tui::*;
 //! use stdext::{arena, arena_format};
 //!
 //! struct State {
@@ -1961,8 +1961,8 @@ impl<'a> Context<'a, '_> {
     ///
     /// # Example
     /// ```
-    /// use edit::framebuffer::IndexedColor;
-    /// use edit::tui::Context;
+    /// use jpedit::framebuffer::IndexedColor;
+    /// use jpedit::tui::Context;
     ///
     /// fn draw(ctx: &mut Context) {
     ///     ctx.styled_label_begin("label");

@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-use edit::framebuffer::{Attributes, IndexedColor};
-use edit::fuzzy::score_fuzzy;
-use edit::helpers::*;
-use edit::icu;
-use edit::input::vk;
-use edit::lsh::LANGUAGES;
-use edit::tui::*;
+use jpedit::framebuffer::{Attributes, IndexedColor};
+use jpedit::fuzzy::score_fuzzy;
+use jpedit::helpers::*;
+use jpedit::icu;
+use jpedit::input::vk;
+use jpedit::lsh::LANGUAGES;
+use jpedit::tui::*;
 use stdext::arena::scratch_arena;
 use stdext::arena_format;
 use stdext::collections::BVec;

@@ -5,11 +5,11 @@ use std::cmp::Ordering;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use edit::framebuffer::IndexedColor;
-use edit::helpers::*;
-use edit::input::{kbmod, vk};
-use edit::tui::*;
-use edit::{icu, path};
+use jpedit::framebuffer::IndexedColor;
+use jpedit::helpers::*;
+use jpedit::input::{kbmod, vk};
+use jpedit::tui::*;
+use jpedit::{icu, path};
 use stdext::arena::scratch_arena;
 use stdext::collections::BVec;
 
@@ -311,7 +311,7 @@ fn draw_dialog_saveas_refresh_files(state: &mut State) {
     if dir.as_os_str().is_empty() {
         // If the path is empty, we are at the drive picker.
         // Add all drives as entries.
-        for drive in edit::sys::drives() {
+        for drive in jpedit::sys::drives() {
             dirs_files[1].push(DisplayablePathBuf::from_string(format!("{drive}:\\")));
         }
 

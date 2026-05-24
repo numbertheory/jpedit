@@ -1,37 +1,12 @@
 # Installation Guide
 
-[![Packaging status](https://repology.org/badge/vertical-allrepos/microsoft-edit.svg?exclude_unsupported=1)](https://repology.org/project/microsoft-edit/versions)
-
-You can also download binaries from [our Releases page](https://github.com/microsoft/edit/releases/latest).
-
-## Windows
-
-You can install the latest version with WinGet:
-```powershell
-winget install Microsoft.Edit
-```
+You can download binaries from [our Releases page](https://github.com/numbertheory/jpedit/releases/latest).
 
 ## Linux (build from source)
 
-If your distribution does not provide binaries, or if you'd like to build your own, you can use our install script, provided you have installed:
-* Rust (via `rustup` or similar)
-* A C compiler (e.g. `gcc`)
-* ICU (e.g. libicu78, libicu, icu)
-* curl/wget and tar
+If you'd like to build your own, you can use our `Makefile`.
 
-The following command will then install `msedit` into `~/.local/bin`:
+The following command will install `jpedit` into `~/.local/bin`:
 ```sh
-curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/microsoft/edit/main/assets/install.sh | sh
-```
-
-Additional flags are `--dev`, to build directly from the main branch, and `--system` to install into `/usr/local/bin`. For instance:
-```sh
-curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/microsoft/edit/main/assets/install.sh | sh -s -- --dev --system
-```
-
-## macOS
-
-You can install the latest version with Homebrew:
-```sh
-brew install msedit
+make install
 ```

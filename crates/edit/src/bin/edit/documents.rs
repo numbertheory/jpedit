@@ -6,10 +6,10 @@ use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::{fs, io};
 
-use edit::buffer::{RcTextBuffer, TextBuffer};
-use edit::helpers::{CoordType, Point};
-use edit::lsh::{FILE_ASSOCIATIONS, Language, process_file_associations};
-use edit::{path, sys};
+use jpedit::buffer::{RcTextBuffer, TextBuffer};
+use jpedit::helpers::{CoordType, Point};
+use jpedit::lsh::{FILE_ASSOCIATIONS, Language, process_file_associations};
+use jpedit::{path, sys};
 
 use crate::apperr;
 use crate::settings::Settings;
