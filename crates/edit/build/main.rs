@@ -158,7 +158,7 @@ fn configure_windows_binary(target_os: TargetOs) {
     winresource::WindowsResource::new()
         .set_manifest_file(manifest_path)
         .set("FileDescription", "JPEdit")
-        .set("LegalCopyright", "Copyright (c) Microsoft Corporation; fork by numbertheory")
+        .set("LegalCopyright", "Copyright (c) Microsoft Corporation; fork by github.com/numbertheory")
         .set_icon(icon_path)
         .compile()
         .unwrap();
