@@ -85,7 +85,15 @@ impl Document {
     }
 
     fn update_language(&mut self) {
-        self.buffer.borrow_mut().set_language(self.get_language());
+        let lang = self.get_language();
+        let mut tb = self.buffer.borrow_mut();
+        tb.set_language(lang);
+
+        if let Some(lang) = lang {
+            if lang.id == "markdown" {
+                tb.set_word_wrap(true);
+            }
+        }
     }
 
     fn get_language(&self) -> Option<&'static Language> {
@@ -285,6 +293,11 @@ impl DocumentManager {
             tb.set_insert_final_newline(!cfg!(windows)); // As mandated by POSIX.
             tb.set_margin_enabled(true);
             tb.set_line_highlight_enabled(true);
+
+            let settings = Settings::borrow();
+            if let Some(col) = settings.word_wrap_column {
+                tb.set_word_wrap_column(col as isize);
+            }
         }
         Ok(buffer)
     }

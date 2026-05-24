@@ -92,13 +92,20 @@ fn run() -> apperr::Result<()> {
     let mut tui = Tui::new()?;
 
     let _restore = setup_terminal(&mut tui, &mut state, &mut vt_parser);
-
+let settings = Settings::borrow();
+if settings.theme.as_deref() == Some("wordperfect") {
+    state.menubar_color_bg = tui.indexed(IndexedColor::White);
+    state.menubar_color_fg = tui.indexed(IndexedColor::Blue);
+} else {
     state.menubar_color_bg = tui.indexed(IndexedColor::Background).oklab_blend(tui.indexed_alpha(
         IndexedColor::BrightBlue,
         1,
         2,
     ));
     state.menubar_color_fg = tui.contrasted(state.menubar_color_bg);
+}
+drop(settings);
+
     let floater_bg = tui
         .indexed_alpha(IndexedColor::Background, 2, 3)
         .oklab_blend(tui.indexed_alpha(IndexedColor::Foreground, 1, 3));
@@ -594,7 +601,12 @@ fn setup_terminal(tui: &mut Tui, state: &mut State, vt_parser: &mut vt::Parser) 
 
     let mut done = false;
     let mut osc_buffer = String::new();
-    let mut indexed_colors = framebuffer::DEFAULT_THEME;
+    let mut indexed_colors = match Settings::borrow().theme.as_deref() {
+        Some("wordperfect") => framebuffer::WORDPERFECT_THEME,
+        Some("classic") => framebuffer::CLASSIC_TERMINAL_THEME,
+        Some("paper") => framebuffer::PAPER_THEME,
+        _ => framebuffer::DEFAULT_THEME,
+    };
     let mut color_responses = 0;
     let mut ambiguous_width = 1;
 

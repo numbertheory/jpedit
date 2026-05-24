@@ -258,7 +258,9 @@ pub struct TextBuffer {
     margin_width: CoordType,
     margin_enabled: bool,
     word_wrap_column: CoordType,
+    preferred_word_wrap_column: CoordType,
     word_wrap_enabled: bool,
+    layout_padding_left: CoordType,
     tab_size: CoordType,
     indent_with_tabs: bool,
     line_highlight_enabled: bool,
@@ -308,7 +310,9 @@ impl TextBuffer {
             margin_width: 0,
             margin_enabled: false,
             word_wrap_column: 0,
+            preferred_word_wrap_column: 0,
             word_wrap_enabled: false,
+            layout_padding_left: 0,
             tab_size: 4,
             indent_with_tabs: false,
             line_highlight_enabled: false,
@@ -629,6 +633,13 @@ impl TextBuffer {
         self.reflow_internal(false);
     }
 
+    pub fn set_word_wrap_column(&mut self, column: CoordType) {
+        if self.preferred_word_wrap_column != column {
+            self.preferred_word_wrap_column = column;
+            self.reflow();
+        }
+    }
+
     fn reflow_internal(&mut self, force: bool) {
         let word_wrap_column_before = self.word_wrap_column;
 
@@ -644,8 +655,21 @@ impl TextBuffer {
 
             let text_width = self.text_width();
             // 2 columns are required, because otherwise wide glyphs wouldn't ever fit.
-            self.word_wrap_column =
-                if self.word_wrap_enabled && text_width >= 2 { text_width } else { 0 };
+            self.word_wrap_column = if self.word_wrap_enabled && text_width >= 2 {
+                if self.preferred_word_wrap_column >= 2 {
+                    text_width.min(self.preferred_word_wrap_column)
+                } else {
+                    text_width
+                }
+            } else {
+                0
+            };
+
+            self.layout_padding_left = if self.word_wrap_column > 0 {
+                (text_width - self.word_wrap_column) / 2
+            } else {
+                0
+            };
         }
 
         self.cursor_for_rendering = None;
@@ -1619,7 +1643,7 @@ impl TextBuffer {
     }
 
     fn cursor_move_to_visual_internal(&self, mut cursor: Cursor, pos: Point) -> Cursor {
-        let pos = Point { x: pos.x.max(0), y: pos.y.max(0) };
+        let pos = Point { x: (pos.x - self.layout_padding_left).max(0), y: pos.y.max(0) };
 
         if pos == cursor.visual_pos {
             return cursor;
@@ -1856,7 +1880,7 @@ impl TextBuffer {
                         number_width
                     );
                     // Blending in the background color will "dim" the indicator dots.
-                    let left = destination.left;
+                    let left = destination.left + self.layout_padding_left;
                     let top = destination.top + y;
                     fb.blend_fg(
                         Rect {
@@ -2023,8 +2047,8 @@ impl TextBuffer {
                                 self.cursor_move_to_offset_internal(cursor_line, global_off);
                             let visualizer_rect = {
                                 let left =
-                                    destination.left + self.margin_width + cursor_line.visual_pos.x
-                                        - origin.x;
+                                    destination.left + self.layout_padding_left + self.margin_width
+                                        + cursor_line.visual_pos.x - origin.x;
                                 let top = destination.top + cursor_line.visual_pos.y - origin.y;
                                 Rect { left, top, right: left + 1, bottom: top + 1 }
                             };
@@ -2043,7 +2067,12 @@ impl TextBuffer {
                 visual_pos_x_max = visual_pos_x_max.max(cursor_end.visual_pos.x);
             }
 
-            fb.replace_text(destination.top + y, destination.left, destination.right, &line);
+            fb.replace_text(
+                destination.top + y,
+                destination.left + self.layout_padding_left,
+                destination.right,
+                &line,
+            );
 
             cursor = cursor_end;
         }
@@ -2055,16 +2084,17 @@ impl TextBuffer {
         // Colorize the margin that we wrote above.
         if self.margin_width > 0 {
             let margin = Rect {
-                left: destination.left,
+                left: destination.left + self.layout_padding_left,
                 top: destination.top,
-                right: destination.left + self.margin_width,
+                right: destination.left + self.layout_padding_left + self.margin_width,
                 bottom: destination.bottom,
             };
             fb.blend_fg(margin, StraightRgba::from_le(0x7f7f7f7f));
         }
 
         if self.ruler > 0 {
-            let left = destination.left + self.margin_width + (self.ruler - origin.x).max(0);
+            let left = destination.left + self.layout_padding_left + self.margin_width
+                + (self.ruler - origin.x).max(0);
             let right = destination.right;
             if left < right {
                 fb.blend_bg(
@@ -2086,12 +2116,12 @@ impl TextBuffer {
             }
 
             // Move the cursor into screen space.
-            x += destination.left - origin.x + self.margin_width;
+            x += destination.left + self.layout_padding_left - origin.x + self.margin_width;
             y += destination.top - origin.y;
 
             let cursor = Point { x, y };
             let text = Rect {
-                left: destination.left + self.margin_width,
+                left: destination.left + self.layout_padding_left + self.margin_width,
                 top: destination.top,
                 right: destination.right,
                 bottom: destination.bottom,
@@ -2103,7 +2133,7 @@ impl TextBuffer {
                 if self.line_highlight_enabled && selection_beg >= selection_end {
                     fb.blend_bg(
                         Rect {
-                            left: destination.left,
+                            left: destination.left + self.layout_padding_left,
                             top: cursor.y,
                             right: destination.right,
                             bottom: cursor.y + 1,
@@ -2139,7 +2169,7 @@ impl TextBuffer {
         let visible_bottom = origin.y + destination.height();
 
         // Text area boundaries in screen coordinates (excluding margin).
-        let text_left = destination.left + self.margin_width;
+        let text_left = destination.left + self.layout_padding_left + self.margin_width;
         let text_right = destination.right;
 
         for logical_y in logical_y_range {

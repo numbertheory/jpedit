@@ -87,6 +87,75 @@ pub const DEFAULT_THEME: [StraightRgba; INDEXED_COLORS_COUNT] = [
     StraightRgba::from_be(0xbebebeff), // Foreground
 ];
 
+/// Classic WordPerfect 5.1 / 6.0 for DOS theme.
+pub const WORDPERFECT_THEME: [StraightRgba; INDEXED_COLORS_COUNT] = [
+    StraightRgba::from_be(0x000000ff), // Black
+    StraightRgba::from_be(0xbe2c21ff), // Red
+    StraightRgba::from_be(0x3fae3aff), // Green
+    StraightRgba::from_be(0xbe9a4aff), // Yellow
+    StraightRgba::from_be(0x0000aaff), // Blue (Darker blue for base)
+    StraightRgba::from_be(0xbb54beff), // Magenta
+    StraightRgba::from_be(0x00a7b2ff), // Cyan
+    StraightRgba::from_be(0xbebebeff), // White
+    StraightRgba::from_be(0x545454ff), // BrightBlack
+    StraightRgba::from_be(0xff3e30ff), // BrightRed
+    StraightRgba::from_be(0x58ea51ff), // BrightGreen
+    StraightRgba::from_be(0xffc944ff), // BrightYellow
+    StraightRgba::from_be(0x5454ffff), // BrightBlue
+    StraightRgba::from_be(0xfc74ffff), // BrightMagenta
+    StraightRgba::from_be(0x54ffffff), // BrightCyan
+    StraightRgba::from_be(0xffffffff), // BrightWhite
+    // --------
+    StraightRgba::from_be(0x0000aaff), // Background (Blue)
+    StraightRgba::from_be(0xbebebeff), // Foreground (Light Gray/White)
+];
+
+/// Classic green-on-black terminal theme.
+pub const CLASSIC_TERMINAL_THEME: [StraightRgba; INDEXED_COLORS_COUNT] = [
+    StraightRgba::from_be(0x000000ff), // Black
+    StraightRgba::from_be(0xbe2c21ff), // Red
+    StraightRgba::from_be(0x00aa00ff), // Green
+    StraightRgba::from_be(0xbe9a4aff), // Yellow
+    StraightRgba::from_be(0x204dbeff), // Blue
+    StraightRgba::from_be(0xbb54beff), // Magenta
+    StraightRgba::from_be(0x00a7b2ff), // Cyan
+    StraightRgba::from_be(0xbebebeff), // White
+    StraightRgba::from_be(0x545454ff), // BrightBlack
+    StraightRgba::from_be(0xff3e30ff), // BrightRed
+    StraightRgba::from_be(0x55ff55ff), // BrightGreen
+    StraightRgba::from_be(0xffc944ff), // BrightYellow
+    StraightRgba::from_be(0x2f6affff), // BrightBlue
+    StraightRgba::from_be(0xfc74ffff), // BrightMagenta
+    StraightRgba::from_be(0x00e1f0ff), // BrightCyan
+    StraightRgba::from_be(0xffffffff), // BrightWhite
+    // --------
+    StraightRgba::from_be(0x000000ff), // Background (Black)
+    StraightRgba::from_be(0x00aa00ff), // Foreground (Green)
+];
+
+/// Paper theme: dark text on a light background.
+pub const PAPER_THEME: [StraightRgba; INDEXED_COLORS_COUNT] = [
+    StraightRgba::from_be(0x000000ff), // Black
+    StraightRgba::from_be(0xbe2c21ff), // Red
+    StraightRgba::from_be(0x3fae3aff), // Green
+    StraightRgba::from_be(0xbe9a4aff), // Yellow
+    StraightRgba::from_be(0x204dbeff), // Blue
+    StraightRgba::from_be(0xbb54beff), // Magenta
+    StraightRgba::from_be(0x00a7b2ff), // Cyan
+    StraightRgba::from_be(0xbebebeff), // White
+    StraightRgba::from_be(0x808080ff), // BrightBlack
+    StraightRgba::from_be(0xff3e30ff), // BrightRed
+    StraightRgba::from_be(0x58ea51ff), // BrightGreen
+    StraightRgba::from_be(0xffc944ff), // BrightYellow
+    StraightRgba::from_be(0x2f6affff), // BrightBlue
+    StraightRgba::from_be(0xfc74ffff), // BrightMagenta
+    StraightRgba::from_be(0x00e1f0ff), // BrightCyan
+    StraightRgba::from_be(0xffffffff), // BrightWhite
+    // --------
+    StraightRgba::from_be(0xf0f0f0ff), // Background (Off-white)
+    StraightRgba::from_be(0x333333ff), // Foreground (Dark gray)
+];
+
 /// A shoddy framebuffer for terminal applications.
 ///
 /// The idea is that you create a [`Framebuffer`], draw a bunch of text and
